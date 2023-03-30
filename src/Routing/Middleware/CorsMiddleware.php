@@ -36,11 +36,16 @@ class CorsMiddleware implements MiddlewareInterface
                     ->withHeader('Access-Control-Expose-Headers', $this->_exposeHeaders())
                     ->withHeader('Access-Control-Allow-Headers', $this->_allowHeaders($request))
                     ->withHeader('Access-Control-Allow-Methods', $this->_allowMethods())
-					->withStatus(200,'OK');
+                    ->withStatus(200,'OK');
+                
+                //Force render for REST methods
+                if(in_array($request->getParam('action'), ['view', 'add', 'edit', 'delete'])){
+                    foreach ($response->getHeaders() as $k => $v)
+                        header("$k: ".$response->getHeaderLine($k));
+                    exit(0);
+                }
             }
-
         }
-
         return $response;
     }
 
